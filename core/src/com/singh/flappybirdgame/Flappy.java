@@ -49,7 +49,7 @@ public class Flappy extends ApplicationAdapter {
 			batch.draw(bottomtube,Gdx.graphics.getWidth()/2-bottomtube.getWidth()/2,Gdx.graphics.getHeight()/2-gap/2-bottomtube.getHeight());
 			if(birdY>0 || velocity<0) {
 				velocity = velocity + gravity;
-				birdY -= velocity;//ss
+				birdY -= velocity;//ssdd
 			}
 
 		}else {
