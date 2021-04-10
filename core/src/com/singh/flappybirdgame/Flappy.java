@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.util.Random;
+
 public class Flappy extends ApplicationAdapter {
 	SpriteBatch batch;
 	Texture background;
@@ -20,6 +22,14 @@ public class Flappy extends ApplicationAdapter {
 	int gamestate=0;
     float gap=400;
 
+    float maxtubeofset;
+    Random randomGenerator;
+	int  maxnooftube=4;
+    float[] tubeX=new float[maxnooftube];
+	float tubeofset[]=new float[maxnooftube];
+    float tubevelocity=4;
+
+    float distbetweentubes;
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
@@ -32,6 +42,14 @@ public class Flappy extends ApplicationAdapter {
 
 		toptube=new Texture("toptube.png");
 		bottomtube=new Texture("bootomtube.png");
+		maxtubeofset=Gdx.graphics.getHeight()/2-gap/2-100;
+		randomGenerator=new Random();
+		distbetweentubes=Gdx.graphics.getWidth()/2;
+
+		for(int i=0;i<maxnooftube;i++){
+			tubeofset[i]=(float) ((randomGenerator.nextFloat()-0.5f)*(Gdx.graphics.getHeight()-(2.4)*gap-200));
+			tubeX[i]=Gdx.graphics.getWidth()/2-toptube.getWidth()/2+i*distbetweentubes;
+		}
 	}
 
 	@Override
@@ -42,14 +60,24 @@ public class Flappy extends ApplicationAdapter {
 
 
 			if(Gdx.input.justTouched()){
-				velocity=-30;//dsojckdsb
-			}
+				velocity=-30;
 
-			batch.draw(toptube,Gdx.graphics.getWidth()/2-toptube.getWidth()/2,Gdx.graphics.getHeight()/2+gap/2);
-			batch.draw(bottomtube,Gdx.graphics.getWidth()/2-bottomtube.getWidth()/2,Gdx.graphics.getHeight()/2-gap/2-bottomtube.getHeight());
+
+			}
+			for(int i=0;i<maxnooftube;i++) {
+				if(tubeX[i]<-Gdx.graphics.getWidth()/2){
+					tubeX[i]+=maxnooftube*distbetweentubes;
+				}else{
+					tubeX[i] -= 4;
+				}
+
+				batch.draw(toptube, tubeX[i], Gdx.graphics.getHeight() / 2 + gap / 2 + tubeofset[i]);
+				batch.draw(bottomtube, tubeX[i], Gdx.graphics.getHeight() / 2 - gap / 2 - bottomtube.getHeight() + tubeofset[i]);
+			}
 			if(birdY>0 || velocity<0) {
 				velocity = velocity + gravity;
 				birdY -= velocity;//ssdd
+
 			}
 
 		}else {
