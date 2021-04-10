@@ -42,7 +42,7 @@ public class Flappy extends ApplicationAdapter {
 
 
 			if(Gdx.input.justTouched()){
-				velocity=-30;
+				velocity=-30;//dsojckdsb
 			}
 
 			batch.draw(toptube,Gdx.graphics.getWidth()/2-toptube.getWidth()/2,Gdx.graphics.getHeight()/2+gap/2);
