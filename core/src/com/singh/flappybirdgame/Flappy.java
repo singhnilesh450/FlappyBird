@@ -19,6 +19,7 @@ public class Flappy extends ApplicationAdapter {
 	Texture background;
 	Texture toptube;
 	Texture bottomtube;
+	Texture gameOver;
 	Texture birds[];
 	ShapeRenderer shapeRenderer;
 	Circle birdCircle;
@@ -33,7 +34,7 @@ public class Flappy extends ApplicationAdapter {
      int gravity=2;
 	float velocity=0;
 	int gamestate=0;
-    float gap=400;
+    float gap=600;
 
     float maxtubeofset;
     Random randomGenerator;
@@ -50,12 +51,13 @@ public class Flappy extends ApplicationAdapter {
 		birds=new Texture[2];
 		birds[0]=new Texture("bird.png");
 		birds[1]=new Texture("bird2.png");
+		gameOver=new Texture("gameover1.png");
 
 		font =new BitmapFont();
 		font.setColor(Color.WHITE);
 		font.getData().setScale(10);
 
-		birdY=(Gdx.graphics.getHeight()/2-birds[0].getHeight()/2);
+
         shapeRenderer=new ShapeRenderer();
         birdCircle=new Circle();
         toppipeReactangle=new Rectangle[maxnooftube];
@@ -66,22 +68,29 @@ public class Flappy extends ApplicationAdapter {
 		randomGenerator=new Random();
 		distbetweentubes=Gdx.graphics.getWidth()/2;
 
-		for(int i=0;i<maxnooftube;i++){
-			tubeofset[i]=(float) ((randomGenerator.nextFloat()-0.5f)*(Gdx.graphics.getHeight()-(2.4)*gap-200));
-			tubeX[i]=Gdx.graphics.getWidth()/2-toptube.getWidth()/2+Gdx.graphics.getWidth()+i*distbetweentubes;
+          startgame();
 
-			toppipeReactangle[i]=new Rectangle();
-			bottompipeReactangle[i]=new Rectangle();
+	}
 
+	public void startgame() {
+		birdY=(Gdx.graphics.getHeight()/2-birds[0].getHeight()/2);
+		for(int i=0;i<maxnooftube;i++) {
+			tubeofset[i] = (float) ((randomGenerator.nextFloat() - 0.5f) * (Gdx.graphics.getHeight() - (1.5) * gap - 200));
+			tubeX[i] = Gdx.graphics.getWidth() / 2 - toptube.getWidth() / 2 + Gdx.graphics.getWidth() * 3/4+ i * distbetweentubes;
+
+			toppipeReactangle[i] = new Rectangle();
+			bottompipeReactangle[i] = new Rectangle();
 		}
 	}
-/*oppipeReactangle.set(tubeX[i], Gdx.graphics.getHeight() / 2 + gap / 2 + tubeofset[i]);
-			bottompipeReactangle.set(tubeX[i], Gdx.graphics.getHeight() / 2 - gap / 2 - bottomtube.getHeight() + tubeofset[i]);*/
+
+
+	/*oppipeReactangle.set(tubeX[i], Gdx.graphics.getHeight() / 2 + gap / 2 + tubeofset[i]);
+                bottompipeReactangle.set(tubeX[i], Gdx.graphics.getHeight() / 2 - gap / 2 - bottomtube.getHeight() + tubeofset[i]);*/
 	@Override
 	public void render () {
 		batch.begin();
 		batch.draw(background,0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-		if(gamestate!=0) {
+		if(gamestate==1) {
 			if (tubeX[scoringTube] < Gdx.graphics.getWidth() / 2) {
 				score++;
 				Gdx.app.log("score",String.valueOf(score));
@@ -96,7 +105,7 @@ public class Flappy extends ApplicationAdapter {
 
 
 			if(Gdx.input.justTouched()){
-				velocity=-30;
+				velocity=-25;
 
 
 			}
@@ -114,15 +123,25 @@ public class Flappy extends ApplicationAdapter {
 				toppipeReactangle[i]=new Rectangle(tubeX[i], Gdx.graphics.getHeight() / 2 + gap / 2 + tubeofset[i],toptube.getWidth(),toptube.getHeight());
 				bottompipeReactangle[i]=new Rectangle( tubeX[i], Gdx.graphics.getHeight() / 2 - gap / 2 - bottomtube.getHeight() + tubeofset[i],bottomtube.getWidth(),bottomtube.getHeight());
 			}
-			if(birdY>0 || velocity<0) {
+			if(birdY>0 ) {
 				velocity = velocity + gravity;
-				birdY -= velocity;//ssdd
-
+				birdY -= velocity;
+			}else{
+				gamestate=2;
 			}
 
-		}else {
+		}else if(gamestate==0){
 			if (Gdx.input.justTouched()) {
 				gamestate = 1;
+			}
+		}else if(gamestate==2){
+			batch.draw(gameOver,Gdx.graphics.getWidth()/2-gameOver.getWidth()/2,Gdx.graphics.getHeight()/2-gameOver.getHeight()/2);
+			if(Gdx.input.justTouched()){
+				gamestate = 1;
+				startgame();;
+				scoringTube=0;
+				score=0;
+				velocity=0;
 			}
 		}
 
@@ -160,6 +179,7 @@ public class Flappy extends ApplicationAdapter {
 */
 			if(Intersector.overlaps(birdCircle,toppipeReactangle[i])  || Intersector.overlaps(birdCircle,bottompipeReactangle[i])){
               Gdx.app.log("Collision","Yes");
+              gamestate=2;
 			}
 		}
         /*shapeRenderer.end();*/
