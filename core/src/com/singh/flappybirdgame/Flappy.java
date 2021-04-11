@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
@@ -23,6 +24,9 @@ public class Flappy extends ApplicationAdapter {
 	Circle birdCircle;
 	Rectangle[] toppipeReactangle;
 	Rectangle[] bottompipeReactangle;
+	BitmapFont font;
+	int score=0;
+	int scoringTube;
 	int flapstate=0;
 	int pause=0;
 	float birdY;
@@ -46,6 +50,10 @@ public class Flappy extends ApplicationAdapter {
 		birds=new Texture[2];
 		birds[0]=new Texture("bird.png");
 		birds[1]=new Texture("bird2.png");
+
+		font =new BitmapFont();
+		font.setColor(Color.WHITE);
+		font.getData().setScale(10);
 
 		birdY=(Gdx.graphics.getHeight()/2-birds[0].getHeight()/2);
         shapeRenderer=new ShapeRenderer();
@@ -74,6 +82,17 @@ public class Flappy extends ApplicationAdapter {
 		batch.begin();
 		batch.draw(background,0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 		if(gamestate!=0) {
+			if (tubeX[scoringTube] < Gdx.graphics.getWidth() / 2) {
+				score++;
+				Gdx.app.log("score",String.valueOf(score));
+
+			if(scoringTube<maxnooftube-1) {
+				scoringTube++;
+			}
+				else {
+                scoringTube=0;
+			}
+		}
 
 
 			if(Gdx.input.justTouched()){
@@ -127,11 +146,10 @@ public class Flappy extends ApplicationAdapter {
 			flapstate=0;*/
 
 
-		batch.draw(birds[flapstate],Gdx.graphics.getWidth()/2-birds[flapstate].getWidth()/2,birdY);
-        batch.end();
+
 
         birdCircle.set(Gdx.graphics.getWidth()/2,birdY+birds[flapstate].getHeight()/2,birds[flapstate].getWidth()/2);
-
+		font.draw(batch,String.valueOf(score),100,200);
 
         /*shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.RED);
@@ -144,7 +162,9 @@ public class Flappy extends ApplicationAdapter {
               Gdx.app.log("Collision","Yes");
 			}
 		}
-        shapeRenderer.end();
+        /*shapeRenderer.end();*/
+		batch.draw(birds[flapstate],Gdx.graphics.getWidth()/2-birds[flapstate].getWidth()/2,birdY);
+		batch.end();
 	}
 	
 	/*@Override
